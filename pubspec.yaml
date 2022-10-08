@@ -1,0 +1,21 @@
+name: tcp_server
+description: A sample command-line application.
+version: 1.0.0
+# homepage: https://www.example.com
+
+environment:
+  sdk: '>=2.18.2 <3.0.0'
+
+dependencies:
+  udp: ^5.0.3
+  sqflite_common_ffi: ^2.1.1+1
+  sqflite_common: ^2.3.0
+  crypto: ^3.0.2
+  convert: ^3.0.2
+
+# dependencies:
+#   path: ^1.8.0
+
+dev_dependencies:
+  lints: ^2.0.0
+  test: ^1.16.0
