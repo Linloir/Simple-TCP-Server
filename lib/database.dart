@@ -1,7 +1,7 @@
 /*
  * @Author       : Linloir
  * @Date         : 2022-10-06 16:15:01
- * @LastEditTime : 2022-10-09 17:59:13
+ * @LastEditTime : 2022-10-09 20:14:06
  * @Description  : 
  */
 
@@ -480,7 +480,7 @@ class DataBaseHelper {
     if(tempFile == null || fileMd5 == null) {
       throw Exception('Missing file parts');
     }
-    var filePath = '${Directory.current.path}\\$fileMd5';
+    var filePath = '${Directory.current.path}/.data/files/$fileMd5';
     await tempFile.copy(filePath);
     tempFile.delete();
     try {

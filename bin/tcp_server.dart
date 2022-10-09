@@ -1,7 +1,7 @@
 /*
  * @Author       : Linloir
  * @Date         : 2022-10-06 15:44:16
- * @LastEditTime : 2022-10-09 18:00:40
+ * @LastEditTime : 2022-10-09 20:13:17
  * @Description  : 
  */
 
@@ -15,8 +15,11 @@ import 'package:tcp_server/tcpcontroller/request.dart';
 import 'package:tcp_server/tcpcontroller/response.dart';
 
 void main(List<String> arguments) async {
-  //Create tmp folder
+  //Create nessesary working directories
   await Directory('${Directory.current.path}/.tmp').create();
+  await Directory('${Directory.current.path}/.data').create();
+  await Directory('${Directory.current.path}/.data/files').create();
+
   await DataBaseHelper().initialize();
   var tokenMap = <int, TCPController>{};
   var controllerMap = <TCPController, Future<int>>{};
