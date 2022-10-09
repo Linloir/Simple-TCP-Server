@@ -1,7 +1,7 @@
 /*
  * @Author       : Linloir
  * @Date         : 2022-10-08 15:10:04
- * @LastEditTime : 2022-10-09 20:21:53
+ * @LastEditTime : 2022-10-09 21:24:07
  * @Description  : 
  */
 
@@ -41,9 +41,17 @@ class TCPController {
     required this.socket
   }) {
     socket.listen(socketHandler);
-    _outStreamController.stream.listen((response) async {
-      await socket.addStream(response.stream);
+    //This future never ends, would that be bothersome?
+    Future(() async {
+      await for(var response in _outStreamController.stream) {
+        await socket.addStream(response.stream);
+      }
     });
+    //This one will fail if two request are handled simultaneously, which cause a stream
+    //adding to the socket which was already added by the previous stream
+    // _outStreamController.stream.listen((response) async {
+    //   await socket.addStream(response.stream);
+    // });
   }
 
   //Listen to the incoming stream and emits event whenever there is a intact request
