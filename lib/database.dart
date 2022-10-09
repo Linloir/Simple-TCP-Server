@@ -1,7 +1,7 @@
 /*
  * @Author       : Linloir
  * @Date         : 2022-10-06 16:15:01
- * @LastEditTime : 2022-10-09 20:28:49
+ * @LastEditTime : 2022-10-09 20:31:23
  * @Description  : 
  */
 
@@ -25,12 +25,12 @@ class DataBaseHelper {
 
   Future<void> initialize() async {
     _database = await databaseFactoryFfi.openDatabase(
-      'E:\\database.db',
+      '${Directory.current.path}/.tmp/database.db',
       options: OpenDatabaseOptions(
         version: 1,
-        onCreate: (db, version) {
+        onCreate: (db, version) async {
           print('[L] Creating Database.');
-          db.execute(
+          await db.execute(
             '''
               CREATE TABLE users (
                 userid    integer primary key autoincrement,
@@ -77,6 +77,7 @@ class DataBaseHelper {
               );
             '''
           );
+          print('[L] Database created');
         },
       )
     );

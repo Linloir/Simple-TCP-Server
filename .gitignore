@@ -3,6 +3,7 @@
 .packages
 
 .tmp/
+.data/
 .data/**
 
 # Conventional directory for build output.
