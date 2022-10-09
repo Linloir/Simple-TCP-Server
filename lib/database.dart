@@ -1,7 +1,7 @@
 /*
  * @Author       : Linloir
  * @Date         : 2022-10-06 16:15:01
- * @LastEditTime : 2022-10-09 20:14:06
+ * @LastEditTime : 2022-10-09 20:28:49
  * @Description  : 
  */
 
@@ -482,7 +482,6 @@ class DataBaseHelper {
     }
     var filePath = '${Directory.current.path}/.data/files/$fileMd5';
     await tempFile.copy(filePath);
-    tempFile.delete();
     try {
       await _database.insert(
         'files',

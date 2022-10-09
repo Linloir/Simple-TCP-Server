@@ -1,7 +1,7 @@
 /*
  * @Author       : Linloir
  * @Date         : 2022-10-08 15:10:04
- * @LastEditTime : 2022-10-09 17:55:26
+ * @LastEditTime : 2022-10-09 20:21:53
  * @Description  : 
  */
 
@@ -17,8 +17,6 @@ class TCPController {
 
   //Stores the incoming bytes of the TCP connection temporarily
   final List<int> buffer = [];
-  //Stores the fetched require temporarily
-  List<int> _requestBytes = [];
 
   //Byte length for json object
   int requestLength = 0;
@@ -66,23 +64,19 @@ class TCPController {
           var tempFile = File('${Directory.current.path}/.tmp/${DateTime.now().microsecondsSinceEpoch}')..createSync();
           //Initialize payload transmission controller
           _payloadStreamController = StreamController();
-          //Bind file to stream
-          _payloadStreamController.stream.listen(
-            (data) {
-              tempFile.writeAsBytesSync(data, mode: FileMode.append, flush: true);
-            },
-            onDone: () {
-              //Payload definetely ends after request is buffered
-              //Therefore transmit the request and payload to stream here
-              _inStreamController.add(TCPRequest(_requestBytes, tempFile));
+          //Create a future that listens to the status of the payload transmission
+          var payloadTransmission = Future(() async {
+            await for(var data in _payloadStreamController.stream) {
+              await tempFile.writeAsBytes(data, mode: FileMode.append, flush: true);
             }
-          );
+          });
           //Bind request construction on stream
           _requestStreamController = StreamController();
           _requestStreamController.stream.listen((requestBytes) {
             //When request stream is closed by controller
-            //Request is intact, save to _request temporarily
-            _requestBytes = requestBytes;
+            payloadTransmission.then((_) {
+              _inStreamController.add(TCPRequest(requestBytes, tempFile));
+            });
           });
         }
         else {
