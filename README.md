@@ -33,7 +33,7 @@ cd Simple-TCP-Server
 # mkdir build
 # dart compile exe ./bin/tcp_server.dart -o ./build/tcp_server.exe
 # cd build
-# tcp_server.exe
+# tcp_server.exe [listen port]
 
 dart run
 ```

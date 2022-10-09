@@ -1,12 +1,11 @@
 /*
  * @Author       : Linloir
  * @Date         : 2022-10-08 15:14:26
- * @LastEditTime : 2022-10-09 17:36:42
+ * @LastEditTime : 2022-10-09 22:56:26
  * @Description  : 
  */
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 
 enum RequestType {
   checkState    ('STATE'),          //Check login state for device token
