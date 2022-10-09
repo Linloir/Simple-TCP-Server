@@ -1,7 +1,7 @@
 /*
  * @Author       : Linloir
  * @Date         : 2022-10-06 16:15:01
- * @LastEditTime : 2022-10-08 23:54:36
+ * @LastEditTime : 2022-10-09 17:59:13
  * @Description  : 
  */
 
@@ -467,7 +467,8 @@ class DataBaseHelper {
         {
           'msgmd5': msg.md5encoded,
           'filemd5': fileMd5
-        }
+        },
+        conflictAlgorithm: ConflictAlgorithm.replace
       );
     }
   }

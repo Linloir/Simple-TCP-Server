@@ -1,7 +1,7 @@
 /*
  * @Author       : Linloir
  * @Date         : 2022-10-08 20:52:48
- * @LastEditTime : 2022-10-08 23:39:59
+ * @LastEditTime : 2022-10-09 13:39:02
  * @Description  : 
  */
 
@@ -18,13 +18,13 @@ Future<TCPResponse> onCheckState(TCPRequest request, Socket socket) async {
   try {
     var userInfo = await DataBaseHelper().checkLoginState(tokenID: request.tokenID);
     return TCPResponse(
-      type: request.requestType, 
+      type: ResponseType.fromRequestType(request.requestType),
       status: ResponseStatus.ok, 
       body: userInfo.jsonObject
     );
   } on Exception catch (exception) {
     return TCPResponse(
-      type: request.requestType,
+      type: ResponseType.fromRequestType(request.requestType),
       status: ResponseStatus.err,
       errInfo: exception.toString()
     );
@@ -39,13 +39,13 @@ Future<TCPResponse> onRegister(TCPRequest request, Socket socket) async {
       tokenID: request.tokenID
     );
     return TCPResponse(
-      type: request.requestType,
+      type: ResponseType.fromRequestType(request.requestType), 
       status: ResponseStatus.ok,
       body: newUserInfo.jsonObject
     );
   } on Exception catch (exception) {
     return TCPResponse(
-      type: request.requestType,
+      type: ResponseType.fromRequestType(request.requestType), 
       status: ResponseStatus.err,
       errInfo: exception.toString()
     );
@@ -59,13 +59,13 @@ Future<TCPResponse> onLogin(TCPRequest request, Socket socket) async {
       tokenID: request.tokenID
     );
     return TCPResponse(
-      type: request.requestType,
+      type: ResponseType.fromRequestType(request.requestType),
       status: ResponseStatus.ok,
       body: userInfo.jsonObject
     );
   } on Exception catch (exception) {
     return TCPResponse(
-      type: request.requestType,
+      type: ResponseType.fromRequestType(request.requestType),
       status: ResponseStatus.err,
       errInfo: exception.toString()
     );
@@ -76,12 +76,12 @@ Future<TCPResponse> onLogout(TCPRequest request, Socket socket) async {
   try {
     await DataBaseHelper().logOut(tokenID: request.tokenID);
     return TCPResponse(
-      type: request.requestType,
+      type: ResponseType.fromRequestType(request.requestType),
       status: ResponseStatus.ok,
     );
   } on Exception catch (exception) {
     return TCPResponse(
-      type: request.requestType,
+      type: ResponseType.fromRequestType(request.requestType),
       status: ResponseStatus.err,
       errInfo: exception.toString()
     );
@@ -92,13 +92,13 @@ Future<TCPResponse> onFetchProfile(TCPRequest request, Socket socket) async {
   try {
     var userInfo = await DataBaseHelper().fetchUserInfoViaToken(tokenID: request.tokenID);
     return TCPResponse(
-      type: request.requestType,
+      type: ResponseType.fromRequestType(request.requestType),
       status: ResponseStatus.ok,
       body: userInfo.jsonObject
     );
   } on Exception catch (exception) {
     return TCPResponse(
-      type: request.requestType,
+      type: ResponseType.fromRequestType(request.requestType),
       status: ResponseStatus.err,
       errInfo: exception.toString()
     );
@@ -112,12 +112,12 @@ Future<TCPResponse> onModifyPassword(TCPRequest request, Socket socket) async {
       tokenID: request.tokenID
     );
     return TCPResponse(
-      type: request.requestType,
+      type: ResponseType.fromRequestType(request.requestType),
       status: ResponseStatus.ok
     );
   } on Exception catch (exception) {
     return TCPResponse(
-      type: request.requestType,
+      type: ResponseType.fromRequestType(request.requestType),
       status: ResponseStatus.err,
       errInfo: exception.toString()
     );
@@ -131,13 +131,13 @@ Future<TCPResponse> onModifyProfile(TCPRequest request, Socket socket) async {
       tokenID: request.tokenID
     );
     return TCPResponse(
-      type: request.requestType,
+      type: ResponseType.fromRequestType(request.requestType),
       status: ResponseStatus.ok,
       body: newUserInfo.jsonObject
     );
   } on Exception catch (exception) {
     return TCPResponse(
-      type: request.requestType,
+      type: ResponseType.fromRequestType(request.requestType),
       status: ResponseStatus.err,
       errInfo: exception.toString()
     );
@@ -153,17 +153,18 @@ Future<TCPResponse> onSendMessage(TCPRequest request, Socket socket) async {
         fileMd5: message.fileMd5
       );
     }
-      await DataBaseHelper().storeMessage(
-        msg: message,
-        fileMd5: message.fileMd5
-      );
+    //Store message
+    await DataBaseHelper().storeMessage(
+      msg: message,
+      fileMd5: message.fileMd5
+    );
     return TCPResponse(
-      type: RequestType.sendMessage,
+      type: ResponseType.fromRequestType(request.requestType),
       status: ResponseStatus.ok,
     );
   } on Exception catch (exception) {
     return TCPResponse(
-      type: request.requestType,
+      type: ResponseType.fromRequestType(request.requestType),
       status: ResponseStatus.err,
       errInfo: exception.toString()
     );
@@ -174,15 +175,15 @@ Future<TCPResponse> onFetchMessage(TCPRequest request, Socket socket) async {
   try {
     var messages = await DataBaseHelper().fetchMessagesFor(tokenID: request.tokenID);
     return TCPResponse(
-      type: request.requestType,
+      type: ResponseType.fromRequestType(request.requestType),
       status: ResponseStatus.ok,
       body: {
-        'messages': messages.map((e) => e.jsonObject)
+        'messages': messages.map((e) => e.jsonObject).toList()
       }
     );
   } on Exception catch (exception) {
     return TCPResponse(
-      type: request.requestType,
+      type: ResponseType.fromRequestType(request.requestType),
       status: ResponseStatus.err,
       errInfo: exception.toString()
     );
@@ -194,13 +195,13 @@ Future<TCPResponse> onFetchFile(TCPRequest request, Socket socket) async {
     var filePath = await DataBaseHelper().fetchFilePath(msgMd5: request.body['msgmd5'] as String);
     var file = File(filePath);
     return TCPResponse(
-      type: request.requestType,
+      type: ResponseType.fromRequestType(request.requestType),
       status: ResponseStatus.ok,
       payload: file
     );
   } on Exception catch (exception) {
     return TCPResponse(
-      type: request.requestType,
+      type: ResponseType.fromRequestType(request.requestType),
       status: ResponseStatus.err,
       errInfo: exception.toString()
     );
@@ -211,13 +212,13 @@ Future<TCPResponse> onSearchUser(TCPRequest request, Socket socket) async {
   try {
     var userInfo = await DataBaseHelper().fetchUserInfoViaUsername(username: request.body['username'] as String);
     return TCPResponse(
-      type: request.requestType,
+      type: ResponseType.fromRequestType(request.requestType),
       status: ResponseStatus.ok,
       body: userInfo.jsonObject
     );
   } on Exception catch (exception) {
     return TCPResponse(
-      type: request.requestType,
+      type: ResponseType.fromRequestType(request.requestType),
       status: ResponseStatus.err,
       errInfo: exception.toString()
     );
@@ -228,12 +229,12 @@ Future<TCPResponse> onAddContact(TCPRequest request, Socket socket) async {
   try {
     await DataBaseHelper().addContact(tokenID: request.tokenID, userID: request.body['userid'] as int);
     return TCPResponse(
-      type: request.requestType,
+      type: ResponseType.fromRequestType(request.requestType),
       status: ResponseStatus.ok
     );
   } on Exception catch (exception) {
     return TCPResponse(
-      type: request.requestType,
+      type: ResponseType.fromRequestType(request.requestType),
       status: ResponseStatus.err,
       errInfo: exception.toString()
     );
@@ -246,7 +247,7 @@ Future<TCPResponse> onFetchContact(TCPRequest request, Socket socket) async {
     var pendingContacts = await DataBaseHelper().fetchPendingContacts(tokenID: request.tokenID);
     var requestingContacts = await DataBaseHelper().fetchRequestingContacts(tokenID: request.tokenID);
     return TCPResponse(
-      type: request.requestType,
+      type: ResponseType.fromRequestType(request.requestType),
       status: ResponseStatus.ok,
       body: {
         "contacts": contacts.map((e) => e.jsonObject),
@@ -256,7 +257,7 @@ Future<TCPResponse> onFetchContact(TCPRequest request, Socket socket) async {
     );
   } on Exception catch (exception) {
     return TCPResponse(
-      type: request.requestType,
+      type: ResponseType.fromRequestType(request.requestType),
       status: ResponseStatus.err,
       errInfo: exception.toString()
     );
@@ -265,7 +266,7 @@ Future<TCPResponse> onFetchContact(TCPRequest request, Socket socket) async {
 
 Future<TCPResponse> onUnknownRequest(TCPRequest request, Socket socket) async {
   return TCPResponse(
-    type: request.requestType,
+    type: ResponseType.fromRequestType(request.requestType),
     status: ResponseStatus.err,
     errInfo: 'Unkown request'
   );

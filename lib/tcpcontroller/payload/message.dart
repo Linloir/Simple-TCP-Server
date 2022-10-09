@@ -1,7 +1,7 @@
 /*
  * @Author       : Linloir
  * @Date         : 2022-10-08 16:16:19
- * @LastEditTime : 2022-10-08 23:20:36
+ * @LastEditTime : 2022-10-09 14:53:11
  * @Description  : Message Info Payload
  */
 
@@ -43,7 +43,7 @@ class Message {
       ..addAll(intToUint8List(targetid))
       ..addAll(intToUint8List(timestamp))
       ..addAll(content.codeUnits)
-    ),
+    ).toString(),
     "filemd5": filemd5
   };
   Message.fromJSONObject(Map<String, Object?> data): _data = data;

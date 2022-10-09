@@ -1,7 +1,7 @@
 /*
  * @Author       : Linloir
  * @Date         : 2022-10-08 15:14:26
- * @LastEditTime : 2022-10-08 23:52:50
+ * @LastEditTime : 2022-10-09 17:36:42
  * @Description  : 
  */
 import 'dart:convert';
@@ -9,7 +9,6 @@ import 'dart:io';
 import 'dart:typed_data';
 
 enum RequestType {
-  token         ('TOKEN'),          //Only exists when server is sending message
   checkState    ('STATE'),          //Check login state for device token
   register      ('REGISTER'),       //Register new user
   login         ('LOGIN'),          //Login via username and password
@@ -41,7 +40,8 @@ class TCPRequest {
   final Map<String, Object?> _data;
   File? payload;
 
-  TCPRequest(Uint8List data, this.payload): _data = jsonDecode(String.fromCharCodes(data));
+  TCPRequest(List<int> data, this.payload): _data = jsonDecode(String.fromCharCodes(data));
+  TCPRequest.none(): _data = {};
 
   String get toJSON => jsonEncode(_data);
   RequestType get requestType => RequestType.fromValue(_data['request'] as String);

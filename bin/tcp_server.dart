@@ -1,155 +1,160 @@
 /*
  * @Author       : Linloir
  * @Date         : 2022-10-06 15:44:16
- * @LastEditTime : 2022-10-08 23:57:37
+ * @LastEditTime : 2022-10-09 18:00:40
  * @Description  : 
  */
 
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:tcp_server/database.dart';
 import 'package:tcp_server/requesthandler.dart';
 import 'package:tcp_server/tcpcontroller/controller.dart';
+import 'package:tcp_server/tcpcontroller/payload/message.dart';
 import 'package:tcp_server/tcpcontroller/request.dart';
 import 'package:tcp_server/tcpcontroller/response.dart';
 
 void main(List<String> arguments) async {
+  //Create tmp folder
+  await Directory('${Directory.current.path}/.tmp').create();
   await DataBaseHelper().initialize();
-  var tokenMap = <int, Socket>{};
-  var socketMap = <Socket, Future<int>>{};
+  var tokenMap = <int, TCPController>{};
+  var controllerMap = <TCPController, Future<int>>{};
   var listenSocket = await ServerSocket.bind('127.0.0.1', 20706);
   listenSocket.listen(
     (socket) {
       var controller = TCPController(socket: socket);
-      controller.stream.listen((request) async {
+      controller.inStream.listen((request) async {
+        print('[L] ${request.toJSON}');
         if(request.tokenID == null) {
-          if(socketMap[socket] == null) {
-            socketMap[socket] = (() async => (await DataBaseHelper().createToken()))();
+          if(controllerMap[controller] == null) {
+            controllerMap[controller] = (() async => (await DataBaseHelper().createToken()))();
           }
-          request.tokenID = await socketMap[socket];
+          request.tokenID = await controllerMap[controller];
           var tokenResponse = TCPResponse(
-            type: RequestType.token,
+            type: ResponseType.token,
             status: ResponseStatus.ok,
             body: {
               "tokenid": request.tokenID
             }
           );
-          await socket.addStream(tokenResponse.stream);
+          controller.outStream.add(tokenResponse);
         }
-        tokenMap[request.tokenID!] = tokenMap[request.tokenID!] ?? socket;
+        tokenMap[request.tokenID!] = tokenMap[request.tokenID!] ?? controller;
         switch(request.requestType) {
           case RequestType.checkState: {
             var response = await onCheckState(request, socket);
-            await socket.addStream(response.stream);
+            controller.outStream.add(response);
             break;
           }
           case RequestType.register: {
             var response = await onRegister(request, socket);
-            await socket.addStream(response.stream);
+            controller.outStream.add(response);
             break;
           }
           case RequestType.login: {
             var response = await onLogin(request, socket);
-            await socket.addStream(response.stream);
+            controller.outStream.add(response);
             break;
           }
           case RequestType.logout: {
             var response = await onLogout(request, socket);
-            await socket.addStream(response.stream);
+            controller.outStream.add(response);
             break;
           }
           case RequestType.profile: {
             var response = await onFetchProfile(request, socket);
-            await socket.addStream(response.stream);
+            controller.outStream.add(response);
             break;
           }
           case RequestType.modifyProfile: {
             var response = await onModifyProfile(request, socket);
-            await socket.addStream(response.stream);
+            controller.outStream.add(response);
             break;
           }
           case RequestType.modifyPassword: {
             var response = await onModifyPassword(request, socket);
-            await socket.addStream(response.stream);
+            controller.outStream.add(response);
             break;
           }
           case RequestType.sendMessage: {
             //Forword Message
-            var message = request.body['message'] as Map<String, Object?>;
+            var message = Message.fromJSONObject(request.body);
             await DataBaseHelper().setFetchHistoryFor(
               tokenID: request.tokenID, 
-              newTimeStamp: message['timestamp'] as int
+              newTimeStamp: message.timestamp
             );
-            var originUserID = message['userid'] as int;
+            var originUserID = message.senderID;
             var onlineDevices = await DataBaseHelper().fetchTokenIDsViaUserID(userID: originUserID);
             for(var device in onlineDevices) {
               if(device == request.tokenID) {
                 continue;
               }
-              var targetSocket = tokenMap[device];
-              targetSocket?.write(jsonEncode({
-                'response': 'FORWARDMSG',
-                'body': {
-                  "message": message
-                }
-              }));
+              var targetController = tokenMap[device];
+              var forwardResponse = TCPResponse(
+                type: ResponseType.forwardMessage,
+                status: ResponseStatus.ok,
+                body: message.jsonObject
+              );
+              targetController?.outStream.add(forwardResponse);
               //Update Fetch Histories
               await DataBaseHelper().setFetchHistoryFor(
                 tokenID: device, 
-                newTimeStamp: message['timestamp'] as int
+                newTimeStamp: message.timestamp
               );
             }
-            var targetUserID = message['targetid'] as int;
+            var targetUserID = message.receiverID;
             var targetDevices = await DataBaseHelper().fetchTokenIDsViaUserID(userID: targetUserID);
             for(var device in targetDevices) {
               //Forward to socket
-              var targetSocket = tokenMap[device];
-              targetSocket?.write(jsonEncode({
-                'response': 'FORWARDMSG',
-                'body': {
-                  "message": message
-                }
-              }));
+              var targetController = tokenMap[device];
+              var forwardResponse = TCPResponse(
+                type: ResponseType.forwardMessage,
+                status: ResponseStatus.ok,
+                body: message.jsonObject
+              );
+              targetController?.outStream.add(forwardResponse);
               //Update Fetch Histories
               await DataBaseHelper().setFetchHistoryFor(
                 tokenID: device, 
-                newTimeStamp: message['timestamp'] as int
+                newTimeStamp: message.timestamp
               );
             }
             var response = await onSendMessage(request, socket);
-            await socket.addStream(response.stream);
+            controller.outStream.add(response);
             break;
           }
           case RequestType.fetchMessage: {
             var response = await onFetchMessage(request, socket);
-            await socket.addStream(response.stream);
+            controller.outStream.add(response);
             break;
           }
           case RequestType.fetchFile: {
             var response = await onFetchFile(request, socket);
-            await socket.addStream(response.stream);
+            controller.outStream.add(response);
             break;
           }
           case RequestType.searchUser: {
             var response = await onSearchUser(request, socket);
-            await socket.addStream(response.stream);
+            controller.outStream.add(response);
             break;
           }
           case RequestType.fetchContact: {
             var response = await onFetchContact(request, socket);
-            await socket.addStream(response.stream);
+            controller.outStream.add(response);
             break;
           }
           case RequestType.unknown: {
             var response = await onUnknownRequest(request, socket);
-            await socket.addStream(response.stream);
+            controller.outStream.add(response);
             break;
           }
           default: {
             print('[E] Drop out of switch case');
           }
         }
+        //Clear temp file
+        request.payload?.delete();
       });
     },
   );
