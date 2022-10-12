@@ -1,7 +1,7 @@
 /*
  * @Author       : Linloir
  * @Date         : 2022-10-08 20:52:48
- * @LastEditTime : 2022-10-09 13:39:02
+ * @LastEditTime : 2022-10-12 09:09:16
  * @Description  : 
  */
 
@@ -188,6 +188,15 @@ Future<TCPResponse> onFetchMessage(TCPRequest request, Socket socket) async {
       errInfo: exception.toString()
     );
   }
+}
+
+Future<TCPResponse> onFindFile(TCPRequest request, Socket socket) async {
+  var hasFile = await DataBaseHelper().findFile(fileMd5: request.body['filemd5'] as String);
+  return TCPResponse(
+    type: ResponseType.fromRequestType(request.requestType),
+    status: hasFile ? ResponseStatus.ok : ResponseStatus.err,
+    errInfo: hasFile ? null : 'File not found'
+  );
 }
 
 Future<TCPResponse> onFetchFile(TCPRequest request, Socket socket) async {

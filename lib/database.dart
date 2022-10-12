@@ -1,7 +1,7 @@
 /*
  * @Author       : Linloir
  * @Date         : 2022-10-06 16:15:01
- * @LastEditTime : 2022-10-09 20:31:23
+ * @LastEditTime : 2022-10-12 09:35:07
  * @Description  : 
  */
 
@@ -497,6 +497,19 @@ class DataBaseHelper {
     }
   }
 
+  Future<bool> findFile({
+    required String fileMd5
+  }) async {
+    var targetFile = await _database.query(
+      'files',
+      where: 'filemd5 = ?',
+      whereArgs: [
+        fileMd5
+      ]
+    );
+    return targetFile.isNotEmpty;
+  }
+
   Future<String> fetchFilePath({
     required String msgMd5
   }) async {
@@ -510,7 +523,7 @@ class DataBaseHelper {
     if(queryResult.isEmpty) {
       throw Exception('File not found');
     }
-    return queryResult[0]['filedir'] as String;
+    return queryResult[0]['dir'] as String;
   }
 
   Future<UserInfo> fetchUserInfoViaToken({

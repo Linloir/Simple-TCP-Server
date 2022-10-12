@@ -1,7 +1,7 @@
 /*
  * @Author       : Linloir
  * @Date         : 2022-10-06 15:44:16
- * @LastEditTime : 2022-10-09 22:57:10
+ * @LastEditTime : 2022-10-12 18:23:31
  * @Description  : 
  */
 
@@ -46,6 +46,7 @@ void main(List<String> arguments) async {
           );
           controller.outStream.add(tokenResponse);
         }
+        //TODO: check if token id is not in tokenid list
         tokenMap[request.tokenID!] = tokenMap[request.tokenID!] ?? controller;
         switch(request.requestType) {
           case RequestType.checkState: {
@@ -132,6 +133,11 @@ void main(List<String> arguments) async {
           }
           case RequestType.fetchMessage: {
             var response = await onFetchMessage(request, socket);
+            controller.outStream.add(response);
+            break;
+          }
+          case RequestType.findFile: {
+            var response = await onFindFile(request, socket);
             controller.outStream.add(response);
             break;
           }

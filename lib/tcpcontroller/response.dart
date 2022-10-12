@@ -1,7 +1,7 @@
 /*
  * @Author       : Linloir
  * @Date         : 2022-10-08 22:40:47
- * @LastEditTime : 2022-10-09 16:39:02
+ * @LastEditTime : 2022-10-12 13:53:06
  * @Description  : 
  */
 
@@ -72,7 +72,7 @@ class TCPResponse {
     }), 
     payloadFile = payload;
 
-  int get responseLength => responseJson.length;
+  int get responseLength => responseJson.codeUnits.length;
   int get payloadLength => payloadFile?.lengthSync() ?? 0;
   Stream<List<int>> get stream async* {
     yield Uint8List(4)..buffer.asInt32List()[0] = responseLength;
