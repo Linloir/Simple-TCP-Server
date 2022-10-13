@@ -1,7 +1,7 @@
 /*
  * @Author       : Linloir
  * @Date         : 2022-10-08 20:52:48
- * @LastEditTime : 2022-10-12 09:09:16
+ * @LastEditTime : 2022-10-13 20:30:53
  * @Description  : 
  */
 
@@ -90,7 +90,7 @@ Future<TCPResponse> onLogout(TCPRequest request, Socket socket) async {
 
 Future<TCPResponse> onFetchProfile(TCPRequest request, Socket socket) async {
   try {
-    var userInfo = await DataBaseHelper().fetchUserInfoViaToken(tokenID: request.tokenID);
+    var userInfo = await DataBaseHelper().fetchUserInfoViaID(userid: request.body['userid'] as int);
     return TCPResponse(
       type: ResponseType.fromRequestType(request.requestType),
       status: ResponseStatus.ok,

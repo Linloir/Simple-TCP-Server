@@ -1,7 +1,7 @@
 /*
  * @Author       : Linloir
  * @Date         : 2022-10-06 16:15:01
- * @LastEditTime : 2022-10-12 09:35:07
+ * @LastEditTime : 2022-10-13 20:36:34
  * @Description  : 
  */
 
@@ -526,30 +526,27 @@ class DataBaseHelper {
     return queryResult[0]['dir'] as String;
   }
 
-  Future<UserInfo> fetchUserInfoViaToken({
-    required int? tokenID
+  Future<UserInfo> fetchUserInfoViaID({
+    required int userid
   }) async {
-    if(tokenID == null) {
-      throw Exception('Invalid device token');
-    }
     
     //Find current binded userID
-    var currentUserQueryResult = (await _database.query(
-      'bindings natural join users',
-      where: 'bindings.tokenid = ?',
+    var userQueryResult = (await _database.query(
+      'users',
+      where: 'userid = ?',
       whereArgs: [
-        tokenID
+        userid
       ]
     ));
-    if(currentUserQueryResult.isEmpty) {
-      throw Exception('User not logged in');
+
+    if(userQueryResult.isEmpty) {
+      throw Exception('User not found');
     }
-    var currentUser = currentUserQueryResult[0];
     
     return UserInfo(
-      userID: currentUser['userid'] as int,
-      userName: currentUser['username'] as String,
-      userAvatar: currentUser['avatar'] as String?
+      userID: userQueryResult[0]['userid'] as int,
+      userName: userQueryResult[0]['username'] as String,
+      userAvatar: userQueryResult[0]['avatar'] as String?
     );
   }
 
