@@ -1,7 +1,7 @@
 /*
  * @Author       : Linloir
  * @Date         : 2022-10-08 20:52:48
- * @LastEditTime : 2022-10-14 11:29:03
+ * @LastEditTime : 2022-10-14 15:13:08
  * @Description  : 
  */
 
@@ -161,6 +161,9 @@ Future<TCPResponse> onSendMessage(TCPRequest request, Socket socket) async {
     return TCPResponse(
       type: ResponseType.fromRequestType(request.requestType),
       status: ResponseStatus.ok,
+      body: {
+        'md5encoded': message.md5encoded
+      }
     );
   } on Exception catch (exception) {
     return TCPResponse(
