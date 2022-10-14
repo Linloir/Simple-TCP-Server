@@ -1,7 +1,7 @@
 /*
  * @Author       : Linloir
  * @Date         : 2022-10-06 16:15:01
- * @LastEditTime : 2022-10-13 20:36:34
+ * @LastEditTime : 2022-10-14 12:13:23
  * @Description  : 
  */
 
@@ -81,6 +81,24 @@ class DataBaseHelper {
         },
       )
     );
+  }
+
+  Future<bool> isTokenValid({
+    required int? tokenid,
+  }) async {
+    if(tokenid == null) {
+      return false;
+    }
+
+    var tokenQueryResult = await _database.query(
+      'tokens',
+      where: 'tokenid = ?',
+      whereArgs: [
+        tokenid
+      ]
+    );
+
+    return tokenQueryResult.isNotEmpty;
   }
 
   //Creates new token
@@ -628,13 +646,19 @@ class DataBaseHelper {
     }
     
     //Find current binded userID
-    var currentUserID = (await _database.query(
+    var currentUserIDQueryResult = (await _database.query(
       'bindings',
       where: 'tokenid = ?',
       whereArgs: [
         tokenID
       ]
-    ))[0]['userid'] as int;
+    ));
+    
+    if(currentUserIDQueryResult.isEmpty) {
+      throw Exception('User not logged in');
+    }
+
+    var currentUserID = currentUserIDQueryResult[0]['userid'] as int;
 
     //Fetch all contacts
     var contactsQueryResult = await _database.query(
@@ -665,14 +689,19 @@ class DataBaseHelper {
       throw Exception('Invalid device token');
     }
     
-    //Find current binded userID
-    var currentUserID = (await _database.query(
+    var currentUserIDQueryResult = (await _database.query(
       'bindings',
       where: 'tokenid = ?',
       whereArgs: [
         tokenID
       ]
-    ))[0]['userid'] as int;
+    ));
+    
+    if(currentUserIDQueryResult.isEmpty) {
+      throw Exception('User not logged in');
+    }
+
+    var currentUserID = currentUserIDQueryResult[0]['userid'] as int;
 
     //Fetch pending contacts
     var contactsQueryResult = await _database.query(
@@ -707,13 +736,19 @@ class DataBaseHelper {
     }
     
     //Find current binded userID
-    var currentUserID = (await _database.query(
+    var currentUserIDQueryResult = (await _database.query(
       'bindings',
       where: 'tokenid = ?',
       whereArgs: [
         tokenID
       ]
-    ))[0]['userid'] as int;
+    ));
+    
+    if(currentUserIDQueryResult.isEmpty) {
+      throw Exception('User not logged in');
+    }
+
+    var currentUserID = currentUserIDQueryResult[0]['userid'] as int;
     
         //Fetch pending contacts
     var contactsQueryResult = await _database.query(

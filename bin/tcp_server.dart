@@ -1,7 +1,7 @@
 /*
  * @Author       : Linloir
  * @Date         : 2022-10-06 15:44:16
- * @LastEditTime : 2022-10-12 18:23:31
+ * @LastEditTime : 2022-10-14 10:26:00
  * @Description  : 
  */
 
@@ -30,9 +30,9 @@ void main(List<String> arguments) async {
   listenSocket.listen(
     (socket) {
       var controller = TCPController(socket: socket);
-      controller.inStream.listen((request) async {
+      controller.requestStreamBroadcast.listen((request) async {
         print('[L] ${request.toJSON}');
-        if(request.tokenID == null) {
+        if(!(await DataBaseHelper().isTokenValid(tokenid: request.tokenID))) {
           if(controllerMap[controller] == null) {
             controllerMap[controller] = (() async => (await DataBaseHelper().createToken()))();
           }
@@ -46,7 +46,6 @@ void main(List<String> arguments) async {
           );
           controller.outStream.add(tokenResponse);
         }
-        //TODO: check if token id is not in tokenid list
         tokenMap[request.tokenID!] = tokenMap[request.tokenID!] ?? controller;
         switch(request.requestType) {
           case RequestType.checkState: {
@@ -148,6 +147,11 @@ void main(List<String> arguments) async {
           }
           case RequestType.searchUser: {
             var response = await onSearchUser(request, socket);
+            controller.outStream.add(response);
+            break;
+          }
+          case RequestType.addContact: {
+            var response = await onAddContact(request, socket);
             controller.outStream.add(response);
             break;
           }

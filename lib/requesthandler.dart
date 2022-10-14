@@ -1,7 +1,7 @@
 /*
  * @Author       : Linloir
  * @Date         : 2022-10-08 20:52:48
- * @LastEditTime : 2022-10-13 20:30:53
+ * @LastEditTime : 2022-10-14 11:29:03
  * @Description  : 
  */
 
@@ -259,9 +259,9 @@ Future<TCPResponse> onFetchContact(TCPRequest request, Socket socket) async {
       type: ResponseType.fromRequestType(request.requestType),
       status: ResponseStatus.ok,
       body: {
-        "contacts": contacts.map((e) => e.jsonObject),
-        "pending": pendingContacts.map((e) => e.jsonObject),
-        "requesting": requestingContacts.map((e) => e.jsonObject)
+        "contacts": contacts.map((e) => e.jsonObject).toList(),
+        "pending": pendingContacts.map((e) => e.jsonObject).toList(),
+        "requesting": requestingContacts.map((e) => e.jsonObject).toList()
       }
     );
   } on Exception catch (exception) {

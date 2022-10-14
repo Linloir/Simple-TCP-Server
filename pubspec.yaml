@@ -12,6 +12,7 @@ dependencies:
   sqflite_common: ^2.3.0
   crypto: ^3.0.2
   convert: ^3.0.2
+  async: ^2.9.0
 
 # dependencies:
 #   path: ^1.8.0
