@@ -1,7 +1,7 @@
 /*
  * @Author       : Linloir
  * @Date         : 2022-10-08 15:10:04
- * @LastEditTime : 2022-10-18 14:50:17
+ * @LastEditTime : 2022-10-19 00:54:03
  * @Description  : 
  */
 
@@ -57,19 +57,32 @@ class TCPController {
     print('[L] Connection Established');
     print('[L] Remote: ${socket.remoteAddress}:${socket.remotePort}');
     print('[L] Local: ${socket.address}:${socket.port}');
-    socket.listen(
-      _pullRequest,
-      onError: (e) {
-        print(e);
-        _requestStreamController.addError(e);
-      },
-      onDone: () {
-        print('[L] [CLOSED   ]-----------------------');
-        print('[L] Connection closed: ${socket.address}:${socket.port}<-${socket.remoteAddress}:${socket.remotePort}');
-        _requestStreamController.close();
-      },
-      cancelOnError: true,
-    );
+    Future(() async {
+      await for(var request in socket) {
+        _pullRequest(request);
+        await Future.delayed(const Duration(microseconds: 0));
+      }
+    }).then((_) {
+      print('[L] [CLOSED   ]-----------------------');
+      print('[L] Connection closed: ${socket.address}:${socket.port}<-${socket.remoteAddress}:${socket.remotePort}');
+      _requestStreamController.close();
+    }).onError((error, stackTrace) {
+      print(error);
+      _requestStreamController.addError(error ?? Error());
+    },);
+    // socket.listen(
+    //   _pullRequest,
+    //   onError: (e) {
+    //     print(e);
+    //     _requestStreamController.addError(e);
+    //   },
+    //   onDone: () {
+    //     print('[L] [CLOSED   ]-----------------------');
+    //     print('[L] Connection closed: ${socket.address}:${socket.port}<-${socket.remoteAddress}:${socket.remotePort}');
+    //     _requestStreamController.close();
+    //   },
+    //   cancelOnError: true,
+    // );
     //This future never ends, would that be bothersome?
     Future(() async {
       try{
@@ -124,7 +137,7 @@ class TCPController {
             _fileCounter %= 1000;
             Future(() async {
               await for(var data in payloadPullStream) {
-                await tempFile.writeAsBytes(data, mode: FileMode.append, flush: true);
+                await tempFile.writeAsBytes(data, mode: FileMode.writeOnlyAppend);
               }
               _payloadRawStreamController.add(tempFile);
             });
@@ -160,7 +173,7 @@ class TCPController {
           if(buffer.length >= payloadLength) {
             //Last few bytes to emit
             //Send the last few bytes to stream
-            _payloadPullStreamController.add(Uint8List.fromList(buffer.sublist(0, payloadLength)));
+            _payloadPullStreamController.add(buffer.sublist(0, payloadLength));
             //Clear buffer
             buffer.removeRange(0, payloadLength);
             //Set payload length to zero
@@ -171,7 +184,7 @@ class TCPController {
           else {
             //Part of payload
             //Transmit all to stream
-            _payloadPullStreamController.add(Uint8List.fromList(buffer));
+            _payloadPullStreamController.add(buffer);
             //Reduce payload bytes left
             payloadLength -= buffer.length;
             //Clear buffer
