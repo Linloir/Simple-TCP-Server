@@ -1,7 +1,7 @@
 /*
  * @Author       : Linloir
  * @Date         : 2022-10-06 16:15:01
- * @LastEditTime : 2022-10-15 11:26:03
+ * @LastEditTime : 2022-10-18 14:12:22
  * @Description  : 
  */
 
@@ -358,7 +358,16 @@ class DataBaseHelper {
 
     //Fetch unfetched messages
     var unfetchMsgQueryResult = await _database.query(
-      'msgs',
+      'msgs join msgfiles on msgs.md5encoded = msgfiles.msgmd5',
+      columns: [
+        'msgs.userid as userid',
+        'msgs.targetid as targetid',
+        'msgs.contenttype as contenttype',
+        'msgs.content as content',
+        'msgs.timestamp as timestamp',
+        'msgs.md5encoded as md5encoded',
+        'msgfiles.filemd5 as filemd5'
+      ],
       where: '(userid = ? or targetid = ?) and timestamp > ?',
       whereArgs: [
         userID,
@@ -376,7 +385,8 @@ class DataBaseHelper {
         ),
         content: message['content'] as String,
         timestamp: message['timestamp'] as int,
-        md5encoded: message['md5encoded'] as String
+        md5encoded: message['md5encoded'] as String,
+        filemd5: message['filemd5'] as String?
       );
     }).toList();
 
