@@ -1,7 +1,7 @@
 /*
  * @Author       : Linloir
  * @Date         : 2022-10-08 20:52:48
- * @LastEditTime : 2022-10-14 15:13:08
+ * @LastEditTime : 2022-10-15 00:40:24
  * @Description  : 
  */
 
@@ -169,7 +169,7 @@ Future<TCPResponse> onSendMessage(TCPRequest request, Socket socket) async {
     return TCPResponse(
       type: ResponseType.fromRequestType(request.requestType),
       status: ResponseStatus.err,
-      errInfo: exception.toString()
+      errInfo: exception.toString(),
     );
   }
 }

@@ -1,7 +1,7 @@
 /*
  * @Author       : Linloir
  * @Date         : 2022-10-06 16:15:01
- * @LastEditTime : 2022-10-14 12:13:23
+ * @LastEditTime : 2022-10-15 11:26:03
  * @Description  : 
  */
 
@@ -502,6 +502,16 @@ class DataBaseHelper {
     var filePath = '${Directory.current.path}/.data/files/$fileMd5';
     await tempFile.copy(filePath);
     try {
+      var sameFile = await _database.query(
+        'files',
+        where: 'filemd5 = ?',
+        whereArgs: [
+          fileMd5
+        ]
+      );
+      if(sameFile.isNotEmpty) {
+        return;
+      }
       await _database.insert(
         'files',
         {
@@ -533,7 +543,7 @@ class DataBaseHelper {
   }) async {
     var queryResult = await _database.query(
       'msgfiles natural join files',
-      where: 'msgfile.msgmd5 = ?',
+      where: 'msgfiles.msgmd5 = ?',
       whereArgs: [
         msgMd5
       ]

@@ -1,7 +1,7 @@
 /*
  * @Author       : Linloir
  * @Date         : 2022-10-08 15:10:04
- * @LastEditTime : 2022-10-14 10:23:16
+ * @LastEditTime : 2022-10-17 22:53:17
  * @Description  : 
  */
 
@@ -24,9 +24,11 @@ class TCPController {
   //Byte length for subsequent data of the json object
   int payloadLength = 0;
 
+  int _fileCounter = 0;
+
   //Construct a stream which emits events on intact requests
-  StreamController<List<int>> _requestRawStreamController = StreamController();
-  StreamController<File> _payloadRawStreamController = StreamController();
+  final StreamController<List<int>> _requestRawStreamController = StreamController();
+  final StreamController<File> _payloadRawStreamController = StreamController();
 
   //Construct a payload stream which forward the incoming byte into temp file
   StreamController<List<int>> _payloadPullStreamController = StreamController()..close();
@@ -41,16 +43,43 @@ class TCPController {
 
   //Provide a post stream for caller functions to push to
   final StreamController<TCPResponse> _responseStreamController = StreamController();
-  StreamSink<TCPResponse> get outStream => _responseStreamController.sink;
+  StreamSink<TCPResponse> get outStream => _responseStreamController;
+  Stream<TCPResponse>? _responseStreamBroadcast;
+  Stream<TCPResponse> get responseStreamBroadcast {
+    _responseStreamBroadcast ??= _responseStreamController.stream.asBroadcastStream();
+    return _responseStreamBroadcast!;
+  }
 
   TCPController({
     required this.socket
   }) {
-    socket.listen(_pullRequest);
+    print('[L] [CONNECTED]-----------------------');
+    print('[L] Connection Established');
+    print('[L] Remote: ${socket.remoteAddress}:${socket.remotePort}');
+    print('[L] Local: ${socket.address}:${socket.port}');
+    socket.listen(
+      _pullRequest,
+      onError: (e) {
+        print(e);
+        _requestStreamController.addError(e);
+      },
+      onDone: () {
+        print('[L] [CLOSED   ]-----------------------');
+        print('[L] Connection closed: ${socket.address}:${socket.port}<-${socket.remoteAddress}:${socket.remotePort}');
+        _requestStreamController.close();
+      },
+      cancelOnError: true,
+    );
     //This future never ends, would that be bothersome?
     Future(() async {
-      await for(var response in _responseStreamController.stream) {
-        await socket.addStream(response.stream);
+      try{
+        await for(var response in responseStreamBroadcast) {
+          await socket.addStream(response.stream);
+        }
+      } catch (e) {
+        print(e);
+        await socket.flush();
+        socket.close();
       }
     });
     //This one will fail if two request are handled simultaneously, which cause a stream
@@ -62,9 +91,9 @@ class TCPController {
       var requestQueue = StreamQueue(_requestRawStreamController.stream);
       var payloadQueue = StreamQueue(_payloadRawStreamController.stream);
       while(await Future<bool>(() => !_requestRawStreamController.isClosed && !_payloadRawStreamController.isClosed)) {
-        var response = await requestQueue.next;
+        var request = await requestQueue.next;
         var payload = await payloadQueue.next;
-        await _pushRequest(requestBytes: response, tempFile: payload);
+        await _pushRequest(requestBytes: request, tempFile: payload);
       }
       requestQueue.cancel();
       payloadQueue.cancel();
@@ -90,7 +119,9 @@ class TCPController {
           //Create a future that listens to the status of the payload transmission
           () {
             var payloadPullStream = _payloadPullStreamController.stream;
-            var tempFile = File('${Directory.current.path}/.tmp/${DateTime.now().microsecondsSinceEpoch}')..createSync();
+            var tempFile = File('${Directory.current.path}/.tmp/${DateTime.now().microsecondsSinceEpoch}$_fileCounter')..createSync();
+            _fileCounter += 1;
+            _fileCounter %= 1000;
             Future(() async {
               await for(var data in payloadPullStream) {
                 await tempFile.writeAsBytes(data, mode: FileMode.append, flush: true);
