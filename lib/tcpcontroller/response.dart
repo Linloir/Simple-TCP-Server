@@ -1,7 +1,7 @@
 /*
  * @Author       : Linloir
  * @Date         : 2022-10-08 22:40:47
- * @LastEditTime : 2022-10-12 13:53:06
+ * @LastEditTime : 2022-10-18 14:44:49
  * @Description  : 
  */
 
@@ -76,7 +76,7 @@ class TCPResponse {
   int get payloadLength => payloadFile?.lengthSync() ?? 0;
   Stream<List<int>> get stream async* {
     yield Uint8List(4)..buffer.asInt32List()[0] = responseLength;
-    yield Uint8List(4)..buffer.asInt32List()[0] = payloadLength;
+    yield Uint8List(8)..buffer.asInt64List()[0] = payloadLength;
     yield Uint8List.fromList(responseJson.codeUnits);
     if(payloadFile != null) {
       yield await payloadFile!.readAsBytes();

@@ -1,7 +1,7 @@
 /*
  * @Author       : Linloir
  * @Date         : 2022-10-08 15:10:04
- * @LastEditTime : 2022-10-17 22:53:17
+ * @LastEditTime : 2022-10-18 14:50:17
  * @Description  : 
  */
 
@@ -108,12 +108,12 @@ class TCPController {
     while(true) {
       if(requestLength == 0 && payloadLength == 0 && _payloadPullStreamController.isClosed) {
         //New request
-        if(buffer.length >= 8) {
+        if(buffer.length >= 12) {
           //Buffered data has more than 8 bytes, enough to read request length and body length
           requestLength = Uint8List.fromList(buffer.sublist(0, 4)).buffer.asInt32List()[0];
-          payloadLength = Uint8List.fromList(buffer.sublist(4, 8)).buffer.asInt32List()[0];
+          payloadLength = Uint8List.fromList(buffer.sublist(4, 12)).buffer.asInt64List()[0];
           //Clear the length indicator bytes
-          buffer.removeRange(0, 8);
+          buffer.removeRange(0, 12);
           //Initialize payload transmission controller
           _payloadPullStreamController = StreamController();
           //Create a future that listens to the status of the payload transmission
