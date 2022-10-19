@@ -1,0 +1,14 @@
+# Files and directories created by pub.
+Dockerfile
+build/
+.dart_tool/
+.git/
+.github/
+.gitignore
+.packages
+
+.data/
+.tmp/
+
+# Conventional directory for build output.
+build/

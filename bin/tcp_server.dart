@@ -1,7 +1,7 @@
 /*
  * @Author       : Linloir
  * @Date         : 2022-10-06 15:44:16
- * @LastEditTime : 2022-10-17 22:56:11
+ * @LastEditTime : 2022-10-19 14:41:56
  * @Description  : 
  */
 
@@ -15,10 +15,8 @@ import 'package:tcp_server/tcpcontroller/request.dart';
 import 'package:tcp_server/tcpcontroller/response.dart';
 
 void main(List<String> arguments) async {
-  //Set port
-  var address = arguments.isEmpty ? '127.0.0.1' : arguments[0];
   //Set address
-  var port = arguments.length < 2 ? 20706 : int.tryParse(arguments[1]) ?? 20706;
+  var port = arguments.isEmpty ? 20706 : int.tryParse(arguments[1]) ?? 20706;
   
   //Create nessesary working directories
   await Directory('${Directory.current.path}/.tmp').create();
@@ -28,7 +26,7 @@ void main(List<String> arguments) async {
   await DataBaseHelper().initialize();
   Map<int, List<TCPController>> tokenMap = {};
   Map<TCPController, Future<int>> controllerMap = {};
-  var listenSocket = await ServerSocket.bind(address, port);
+  var listenSocket = await ServerSocket.bind(InternetAddress.anyIPv4, port);
   listenSocket.listen(
     (socket) {
       var controller = TCPController(socket: socket);
