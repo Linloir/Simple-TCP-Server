@@ -1,7 +1,7 @@
 /*
  * @Author       : Linloir
  * @Date         : 2022-10-08 15:10:04
- * @LastEditTime : 2022-10-19 00:54:03
+ * @LastEditTime : 2022-10-19 10:41:12
  * @Description  : 
  */
 
@@ -184,7 +184,7 @@ class TCPController {
           else {
             //Part of payload
             //Transmit all to stream
-            _payloadPullStreamController.add(buffer);
+            _payloadPullStreamController.add([...buffer]);
             //Reduce payload bytes left
             payloadLength -= buffer.length;
             //Clear buffer
