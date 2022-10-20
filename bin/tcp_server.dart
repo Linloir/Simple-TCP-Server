@@ -1,7 +1,7 @@
 /*
  * @Author       : Linloir
  * @Date         : 2022-10-06 15:44:16
- * @LastEditTime : 2022-10-20 01:00:24
+ * @LastEditTime : 2022-10-20 10:47:50
  * @Description  : 
  */
 
@@ -45,7 +45,12 @@ void main(List<String> arguments) async {
         (request) async {
           print('[L] [INCOMING ]-----------------------');
           print('[L] Incoming from ${controller.socket.remoteAddress}:${controller.socket.remotePort}');
-          print('[L] Message: ${request.toJSON}');
+          if(request.requestType == RequestType.sendMessage) {
+            print('[L] Message: (Message body)');
+          }
+          else {
+            print('[L] Message: ${request.toJSON}');
+          }
           if(!(await DataBaseHelper().isTokenValid(tokenid: request.tokenID))) {
             if(controllerMap[controller] == null) {
               controllerMap[controller] = (() async => (await DataBaseHelper().createToken()))();
