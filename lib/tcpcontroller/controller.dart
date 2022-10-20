@@ -1,7 +1,7 @@
 /*
  * @Author       : Linloir
  * @Date         : 2022-10-08 15:10:04
- * @LastEditTime : 2022-10-20 17:33:52
+ * @LastEditTime : 2022-10-20 20:20:00
  * @Description  : 
  */
 
@@ -133,7 +133,7 @@ class TCPController {
           //Create a future that listens to the status of the payload transmission
           () {
             var payloadPullStream = _payloadPullStreamController.stream;
-            var tempFile = File('${Directory.current.path}/.tmp/${DateTime.now().microsecondsSinceEpoch}$_fileCounter')..createSync();
+            var tempFile = File('${Directory.current.path}/.data/.tmp/${DateTime.now().microsecondsSinceEpoch}$_fileCounter')..createSync();
             _fileCounter += 1;
             _fileCounter %= 1000;
             Future(() async {

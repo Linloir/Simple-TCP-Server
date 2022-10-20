@@ -14,13 +14,14 @@ RUN dart compile exe bin/tcp_server.dart -o bin/tcp_server
 
 FROM ubuntu:latest
 
-RUN apt-get update
-RUN apt-get -y install libsqlite3-0 libsqlite3-dev
+RUN apt-get update && apt-get -y install libsqlite3-0 libsqlite3-dev
 
 # Copy the previously built executable into the scratch layer
-COPY --from=compile /runtime/ ~/server/
-COPY --from=compile /lchatserver/bin/tcp_server ~/server/lchatserver/bin/
+RUN mkdir /lchatserver
+COPY --from=compile /runtime/ /lchatserver/
+COPY --from=compile /lchatserver/bin/tcp_server /lchatserver/bin/
 
 # Start server.
 EXPOSE 20706
-CMD ["~/server/lchatserver/bin/tcp_server"]
+WORKDIR /lchatserver/bin
+CMD ["/lchatserver/bin/tcp_server"]

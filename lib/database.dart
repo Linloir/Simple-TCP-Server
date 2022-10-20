@@ -1,7 +1,7 @@
 /*
  * @Author       : Linloir
  * @Date         : 2022-10-06 16:15:01
- * @LastEditTime : 2022-10-20 13:14:40
+ * @LastEditTime : 2022-10-20 20:58:57
  * @Description  : 
  */
 
@@ -25,7 +25,7 @@ class DataBaseHelper {
 
   Future<void> initialize() async {
     _database = await databaseFactoryFfi.openDatabase(
-      '${Directory.current.path}/.tmp/database.db',
+      '${Directory.current.path}/.data/.tmp/database.db',
       options: OpenDatabaseOptions(
         version: 1,
         onCreate: (db, version) async {
@@ -34,7 +34,7 @@ class DataBaseHelper {
             '''
               CREATE TABLE users (
                 userid    integer primary key autoincrement,
-                username  text not null,
+                username  text unique not null,
                 passwd    text not null,
                 avatar    text
               );
@@ -241,17 +241,29 @@ class DataBaseHelper {
     
     //Insert into users
     try {
-      await _database.insert(
-        'users',
-        {
-          'username': identity.userName,
-          'passwd': identity.userPasswd,
-          'avatar': null
-        },
-        conflictAlgorithm: ConflictAlgorithm.rollback
-      );
-    } catch (conflict) {
-      throw Exception(['Database failure', conflict.toString()]);
+      await _database.transaction((txn) async {
+        var result = await txn.query(
+          'users',
+          where: 'username = ?',
+          whereArgs: [
+            identity.userName
+          ]
+        );
+        if(result.isNotEmpty) {
+          throw Exception('Username already exists');
+        }
+        await txn.insert(
+          'users',
+          {
+            'username': identity.userName,
+            'passwd': identity.userPasswd,
+            'avatar': null
+          },
+          conflictAlgorithm: ConflictAlgorithm.rollback
+        );
+      });
+    } catch (e) {
+      rethrow;
     }
 
     //Get new userid

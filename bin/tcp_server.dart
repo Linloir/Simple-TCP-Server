@@ -1,7 +1,7 @@
 /*
  * @Author       : Linloir
  * @Date         : 2022-10-06 15:44:16
- * @LastEditTime : 2022-10-20 16:34:10
+ * @LastEditTime : 2022-10-20 20:25:43
  * @Description  : 
  */
 
@@ -17,10 +17,13 @@ import 'package:tcp_server/tcpcontroller/response.dart';
 void main(List<String> arguments) async {
   //Set address
   var port = arguments.isEmpty ? 20706 : int.tryParse(arguments[1]) ?? 20706;
+
+  print('[L] [STARTUP  ]-----------------------');
+  print('[L] Running at directory ${Directory.current.path}');
   
   //Create nessesary working directories
-  await Directory('${Directory.current.path}/.tmp').create();
   await Directory('${Directory.current.path}/.data').create();
+  await Directory('${Directory.current.path}/.data/.tmp').create();
   await Directory('${Directory.current.path}/.data/files').create();
 
   await DataBaseHelper().initialize();
