@@ -1,7 +1,7 @@
 /*
  * @Author       : Linloir
  * @Date         : 2022-10-06 16:15:01
- * @LastEditTime : 2022-10-18 14:12:22
+ * @LastEditTime : 2022-10-20 10:40:50
  * @Description  : 
  */
 
@@ -358,7 +358,7 @@ class DataBaseHelper {
 
     //Fetch unfetched messages
     var unfetchMsgQueryResult = await _database.query(
-      'msgs join msgfiles on msgs.md5encoded = msgfiles.msgmd5',
+      'msgs left outer join msgfiles on msgs.md5encoded = msgfiles.msgmd5',
       columns: [
         'msgs.userid as userid',
         'msgs.targetid as targetid',

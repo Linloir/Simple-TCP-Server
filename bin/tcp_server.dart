@@ -1,7 +1,7 @@
 /*
  * @Author       : Linloir
  * @Date         : 2022-10-06 15:44:16
- * @LastEditTime : 2022-10-19 14:41:56
+ * @LastEditTime : 2022-10-20 01:00:24
  * @Description  : 
  */
 
@@ -121,9 +121,15 @@ void main(List<String> arguments) async {
                 );
                 for(var controller in targetControllers) {
                   try {
+                    print('[L] [MSGFOWARD]-----------------------');
+                    print('[L] Forwarding message to ${controller.socket.remoteAddress}:${controller.socket.remotePort}');
                     controller.outStream.add(forwardResponse);
                   } catch(e) {
-                    print(e);
+                    print('[E] [EXCEPTION]-----------------------');
+                    var token = controllerMap[controller];
+                    controllerMap.remove(controller);
+                    tokenMap[token]?.remove(controller);
+                    continue;
                   }
                 }
                 //Update Fetch Histories
@@ -153,6 +159,7 @@ void main(List<String> arguments) async {
                     var token = controllerMap[controller];
                     controllerMap.remove(controller);
                     tokenMap[token]?.remove(controller);
+                    continue;
                   }
                 }
                 //Update Fetch Histories
