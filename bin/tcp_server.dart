@@ -1,7 +1,7 @@
 /*
  * @Author       : Linloir
  * @Date         : 2022-10-06 15:44:16
- * @LastEditTime : 2022-10-20 10:47:50
+ * @LastEditTime : 2022-10-20 16:34:10
  * @Description  : 
  */
 
@@ -200,6 +200,15 @@ void main(List<String> arguments) async {
             case RequestType.addContact: {
               var response = await onAddContact(request, socket);
               controller.outStream.add(response);
+              var contactResponse = await onFetchContact(
+                TCPRequest.fromData(
+                  type: RequestType.fetchContact, 
+                  body: {}, 
+                  tokenID: request.tokenID
+                ), 
+                socket
+              );
+              controller.outStream.add(contactResponse);
               break;
             }
             case RequestType.fetchContact: {

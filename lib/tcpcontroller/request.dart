@@ -1,7 +1,7 @@
 /*
  * @Author       : Linloir
  * @Date         : 2022-10-08 15:14:26
- * @LastEditTime : 2022-10-09 22:56:26
+ * @LastEditTime : 2022-10-20 16:33:16
  * @Description  : 
  */
 import 'dart:convert';
@@ -40,6 +40,16 @@ class TCPRequest {
   File? payload;
 
   TCPRequest(List<int> data, this.payload): _data = jsonDecode(String.fromCharCodes(data));
+  TCPRequest.fromData({
+    required RequestType type, 
+    required Map<String, Object?> body, 
+    required int? tokenID,
+    this.payload
+  }): _data = {
+    'request': type.value,
+    'tokenid': tokenID,
+    'body': body
+  };
   TCPRequest.none(): _data = {};
 
   String get toJSON => jsonEncode(_data);

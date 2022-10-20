@@ -1,7 +1,7 @@
 /*
  * @Author       : Linloir
  * @Date         : 2022-10-08 15:10:04
- * @LastEditTime : 2022-10-19 10:41:12
+ * @LastEditTime : 2022-10-20 17:33:52
  * @Description  : 
  */
 
@@ -90,7 +90,8 @@ class TCPController {
           await socket.addStream(response.stream);
         }
       } catch (e) {
-        print(e);
+        print('[E] [EXCEPTION]-----------------------');
+        print('[E] Adding bytes to socket stream failed');
         await socket.flush();
         socket.close();
       }
@@ -201,6 +202,11 @@ class TCPController {
     required List<int> requestBytes,
     required File tempFile
   }) async {
-    _requestStreamController.add(TCPRequest(requestBytes, tempFile));
+    try{
+      _requestStreamController.add(TCPRequest(requestBytes, tempFile));
+    } catch (e) {
+      print('[E] [EXCEPTION]-----------------------');
+      print('[E] Adding bytes to request stream failed');
+    }
   }
 }

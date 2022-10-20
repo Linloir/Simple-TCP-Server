@@ -1,7 +1,7 @@
 /*
  * @Author       : Linloir
  * @Date         : 2022-10-06 16:15:01
- * @LastEditTime : 2022-10-20 10:40:50
+ * @LastEditTime : 2022-10-20 13:14:40
  * @Description  : 
  */
 
@@ -617,6 +617,10 @@ class DataBaseHelper {
           'username': userInfo.userName,
           'avatar': userInfo.userAvatar
         },
+        where: 'userid = ?',
+        whereArgs: [
+          currentUserID
+        ],
         conflictAlgorithm: ConflictAlgorithm.rollback
       );
     } catch (conflict) {
