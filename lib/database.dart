@@ -1,7 +1,7 @@
 /*
  * @Author       : Linloir
  * @Date         : 2022-10-06 16:15:01
- * @LastEditTime : 2022-10-20 20:58:57
+ * @LastEditTime : 2022-10-22 21:08:27
  * @Description  : 
  */
 
@@ -403,19 +403,19 @@ class DataBaseHelper {
     }).toList();
 
     //Set new fetch history
-    if(unfetchMsgQueryResult.isNotEmpty) {
-      await _database.update(
-        'histories',
-        {
-          'lastfetch': unfetchMsgQueryResult[0]['timestamp']
-        },
-        where: 'tokenid = ? and userid = ?',
-        whereArgs: [
-          tokenID,
-          userID
-        ]
-      );
-    }
+    // if(unfetchMsgQueryResult.isNotEmpty) {
+    //   await _database.update(
+    //     'histories',
+    //     {
+    //       'lastfetch': unfetchMsgQueryResult[0]['timestamp']
+    //     },
+    //     where: 'tokenid = ? and userid = ?',
+    //     whereArgs: [
+    //       tokenID,
+    //       userID
+    //     ]
+    //   );
+    // }
     
     //return result
     return unfetchMessages;

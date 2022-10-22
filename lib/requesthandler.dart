@@ -1,7 +1,7 @@
 /*
  * @Author       : Linloir
  * @Date         : 2022-10-08 20:52:48
- * @LastEditTime : 2022-10-15 00:40:24
+ * @LastEditTime : 2022-10-22 20:56:15
  * @Description  : 
  */
 
@@ -274,6 +274,14 @@ Future<TCPResponse> onFetchContact(TCPRequest request, Socket socket) async {
       errInfo: exception.toString()
     );
   }
+}
+
+void onAckFetch(TCPRequest request, Socket socket) async {
+  //Update Fetch Histories
+  await DataBaseHelper().setFetchHistoryFor(
+    tokenID: request.tokenID, 
+    newTimeStamp: request.body['timestamp'] as int,
+  );
 }
 
 Future<TCPResponse> onUnknownRequest(TCPRequest request, Socket socket) async {

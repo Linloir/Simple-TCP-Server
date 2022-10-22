@@ -1,7 +1,7 @@
 /*
  * @Author       : Linloir
  * @Date         : 2022-10-08 15:10:04
- * @LastEditTime : 2022-10-22 20:30:36
+ * @LastEditTime : 2022-10-22 21:20:57
  * @Description  : 
  */
 
@@ -58,20 +58,21 @@ class TCPController {
     print('[L] Remote: ${socket.remoteAddress}:${socket.remotePort}');
     print('[L] Local: ${socket.address}:${socket.port}');
     Future(() async {
-      await for(var request in socket) {
-        _pullRequest(request);
-        await Future.delayed(const Duration(microseconds: 0));
+      try {
+        await for(var request in socket) {
+          _pullRequest(request);
+          await Future.delayed(const Duration(microseconds: 0));
+        }
+      } catch (e) {
+        _requestStreamController.addError(e);
+        _responseStreamController.addError(e);
       }
     }).then((_) {
       print('[L] [CLOSED   ]-----------------------');
-      print('[L] Connection closed: ${socket.address}:${socket.port}<-${socket.remoteAddress}:${socket.remotePort}');
+      print('[L] Connection closed: ${socket.address}:${socket.port}');
       _requestStreamController.close();
       _responseStreamController.close();
-    }).onError((error, stackTrace) {
-      print(error);
-      _requestStreamController.addError(error ?? Error());
-      _responseStreamController.addError(error ?? Error());
-    },);
+    });
     // socket.listen(
     //   _pullRequest,
     //   onError: (e) {

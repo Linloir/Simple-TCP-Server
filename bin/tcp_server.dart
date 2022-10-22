@@ -1,7 +1,7 @@
 /*
  * @Author       : Linloir
  * @Date         : 2022-10-06 15:44:16
- * @LastEditTime : 2022-10-22 20:35:50
+ * @LastEditTime : 2022-10-22 21:25:00
  * @Description  : 
  */
 
@@ -38,7 +38,7 @@ void main(List<String> arguments) async {
         onError: (_) {
           print('[L] [EXCEPTION]-----------------------');
           print('[L] TCP Controller ran into exception');
-          print('[L] Remote: ${controller.socket.remoteAddress}:${controller.socket.remotePort}');
+          print('[L] socket: ${controller.socket.address}:${controller.socket.port}');
           var token = controllerMap[controller];
           controllerMap.remove(controller);
           tokenMap[token]?.remove(controller);
@@ -81,17 +81,38 @@ void main(List<String> arguments) async {
           switch(request.requestType) {
             case RequestType.checkState: {
               var response = await onCheckState(request, socket);
-              controller.outStream.add(response);
+              try {
+                controller.outStream.add(response);
+              } catch (e) {
+                print('[E] [EXCEPTION]-----------------------');
+                var token = controllerMap[controller];
+                controllerMap.remove(controller);
+                tokenMap[token]?.remove(controller);
+              }
               break;
             }
             case RequestType.register: {
               var response = await onRegister(request, socket);
-              controller.outStream.add(response);
+              try {
+                controller.outStream.add(response);
+              } catch (e) {
+                print('[E] [EXCEPTION]-----------------------');
+                var token = controllerMap[controller];
+                controllerMap.remove(controller);
+                tokenMap[token]?.remove(controller);
+              }
               break;
             }
             case RequestType.login: {
               var response = await onLogin(request, socket);
-              controller.outStream.add(response);
+              try {
+                controller.outStream.add(response);
+              } catch (e) {
+                print('[E] [EXCEPTION]-----------------------');
+                var token = controllerMap[controller];
+                controllerMap.remove(controller);
+                tokenMap[token]?.remove(controller);
+              }
               break;
             }
             case RequestType.logout: {
@@ -101,17 +122,38 @@ void main(List<String> arguments) async {
             }
             case RequestType.profile: {
               var response = await onFetchProfile(request, socket);
-              controller.outStream.add(response);
+              try {
+                controller.outStream.add(response);
+              } catch (e) {
+                print('[E] [EXCEPTION]-----------------------');
+                var token = controllerMap[controller];
+                controllerMap.remove(controller);
+                tokenMap[token]?.remove(controller);
+              }
               break;
             }
             case RequestType.modifyProfile: {
               var response = await onModifyProfile(request, socket);
-              controller.outStream.add(response);
+              try {
+                controller.outStream.add(response);
+              } catch (e) {
+                print('[E] [EXCEPTION]-----------------------');
+                var token = controllerMap[controller];
+                controllerMap.remove(controller);
+                tokenMap[token]?.remove(controller);
+              }
               break;
             }
             case RequestType.modifyPassword: {
               var response = await onModifyPassword(request, socket);
-              controller.outStream.add(response);
+              try {
+                controller.outStream.add(response);
+              } catch (e) {
+                print('[E] [EXCEPTION]-----------------------');
+                var token = controllerMap[controller];
+                controllerMap.remove(controller);
+                tokenMap[token]?.remove(controller);
+              }
               break;
             }
             case RequestType.sendMessage: {
@@ -183,32 +225,74 @@ void main(List<String> arguments) async {
                 // );
               }
               var response = await onSendMessage(request, socket);
-              controller.outStream.add(response);
+              try {
+                controller.outStream.add(response);
+              } catch (e) {
+                print('[E] [EXCEPTION]-----------------------');
+                var token = controllerMap[controller];
+                controllerMap.remove(controller);
+                tokenMap[token]?.remove(controller);
+              }
               break;
             }
             case RequestType.fetchMessage: {
               var response = await onFetchMessage(request, socket);
-              controller.outStream.add(response);
+              try {
+                controller.outStream.add(response);
+              } catch (e) {
+                print('[E] [EXCEPTION]-----------------------');
+                var token = controllerMap[controller];
+                controllerMap.remove(controller);
+                tokenMap[token]?.remove(controller);
+              }
               break;
             }
             case RequestType.findFile: {
               var response = await onFindFile(request, socket);
-              controller.outStream.add(response);
+              try {
+                controller.outStream.add(response);
+              } catch (e) {
+                print('[E] [EXCEPTION]-----------------------');
+                var token = controllerMap[controller];
+                controllerMap.remove(controller);
+                tokenMap[token]?.remove(controller);
+              }
               break;
             }
             case RequestType.fetchFile: {
               var response = await onFetchFile(request, socket);
-              controller.outStream.add(response);
+              try {
+                controller.outStream.add(response);
+              } catch (e) {
+                print('[E] [EXCEPTION]-----------------------');
+                var token = controllerMap[controller];
+                controllerMap.remove(controller);
+                tokenMap[token]?.remove(controller);
+              }
               break;
             }
             case RequestType.searchUser: {
               var response = await onSearchUser(request, socket);
-              controller.outStream.add(response);
+              try {
+                controller.outStream.add(response);
+              } catch (e) {
+                print('[E] [EXCEPTION]-----------------------');
+                var token = controllerMap[controller];
+                controllerMap.remove(controller);
+                tokenMap[token]?.remove(controller);
+              }
               break;
             }
             case RequestType.addContact: {
               var response = await onAddContact(request, socket);
-              controller.outStream.add(response);
+              try {
+                controller.outStream.add(response);
+              } catch (e) {
+                print('[E] [EXCEPTION]-----------------------');
+                var token = controllerMap[controller];
+                controllerMap.remove(controller);
+                tokenMap[token]?.remove(controller);
+              }
               var contactResponse = await onFetchContact(
                 TCPRequest.fromData(
                   type: RequestType.fetchContact, 
@@ -222,12 +306,30 @@ void main(List<String> arguments) async {
             }
             case RequestType.fetchContact: {
               var response = await onFetchContact(request, socket);
-              controller.outStream.add(response);
+              try {
+                controller.outStream.add(response);
+              } catch (e) {
+                print('[E] [EXCEPTION]-----------------------');
+                var token = controllerMap[controller];
+                controllerMap.remove(controller);
+                tokenMap[token]?.remove(controller);
+              }
+              break;
+            }
+            case RequestType.ackFetch: {
+              onAckFetch(request, socket);
               break;
             }
             case RequestType.unknown: {
               var response = await onUnknownRequest(request, socket);
-              controller.outStream.add(response);
+              try {
+                controller.outStream.add(response);
+              } catch (e) {
+                print('[E] [EXCEPTION]-----------------------');
+                var token = controllerMap[controller];
+                controllerMap.remove(controller);
+                tokenMap[token]?.remove(controller);
+              }
               break;
             }
             default: {
