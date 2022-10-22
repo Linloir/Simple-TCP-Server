@@ -1,7 +1,7 @@
 /*
  * @Author       : Linloir
  * @Date         : 2022-10-06 15:44:16
- * @LastEditTime : 2022-10-20 20:25:43
+ * @LastEditTime : 2022-10-22 17:56:35
  * @Description  : 
  */
 
@@ -16,7 +16,7 @@ import 'package:tcp_server/tcpcontroller/response.dart';
 
 void main(List<String> arguments) async {
   //Set address
-  var port = arguments.isEmpty ? 20706 : int.tryParse(arguments[1]) ?? 20706;
+  var port = arguments.isEmpty ? 20706 : int.tryParse(arguments[0]) ?? 20706;
 
   print('[L] [STARTUP  ]-----------------------');
   print('[L] Running at directory ${Directory.current.path}');
