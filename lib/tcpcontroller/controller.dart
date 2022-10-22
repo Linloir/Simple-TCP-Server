@@ -1,7 +1,7 @@
 /*
  * @Author       : Linloir
  * @Date         : 2022-10-08 15:10:04
- * @LastEditTime : 2022-10-20 20:20:00
+ * @LastEditTime : 2022-10-22 20:30:36
  * @Description  : 
  */
 
@@ -66,9 +66,11 @@ class TCPController {
       print('[L] [CLOSED   ]-----------------------');
       print('[L] Connection closed: ${socket.address}:${socket.port}<-${socket.remoteAddress}:${socket.remotePort}');
       _requestStreamController.close();
+      _responseStreamController.close();
     }).onError((error, stackTrace) {
       print(error);
       _requestStreamController.addError(error ?? Error());
+      _responseStreamController.addError(error ?? Error());
     },);
     // socket.listen(
     //   _pullRequest,

@@ -1,7 +1,7 @@
 /*
  * @Author       : Linloir
  * @Date         : 2022-10-08 15:14:26
- * @LastEditTime : 2022-10-20 16:33:16
+ * @LastEditTime : 2022-10-22 20:21:10
  * @Description  : 
  */
 import 'dart:convert';
@@ -16,6 +16,7 @@ enum RequestType {
   modifyPassword('MODIFYPASSWD'),   //Modify user password
   modifyProfile ('MODIFYPROFILE'),  //Modify user profile
   sendMessage   ('SENDMSG'),        //Send message
+  ackMessage    ('ACKMSG'),         //Ack forwarded messages, update fetch history
   fetchMessage  ('FETCHMSG'),       //Fetch message
   findFile      ('FINDFILE'),       //Find file by md5 before transmitting the file
   fetchFile     ('FETCHFILE'),      //Fetch file and file md5 by message md5

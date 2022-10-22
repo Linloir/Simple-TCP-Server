@@ -1,7 +1,7 @@
 /*
  * @Author       : Linloir
  * @Date         : 2022-10-06 15:44:16
- * @LastEditTime : 2022-10-22 17:56:35
+ * @LastEditTime : 2022-10-22 20:35:50
  * @Description  : 
  */
 
@@ -42,7 +42,13 @@ void main(List<String> arguments) async {
           var token = controllerMap[controller];
           controllerMap.remove(controller);
           tokenMap[token]?.remove(controller);
-        }
+        },
+        onDone: () {
+          var token = controllerMap[controller];
+          controllerMap.remove(controller);
+          tokenMap[token]?.remove(controller);
+        },
+        cancelOnError: true
       );
       controller.requestStreamBroadcast.listen(
         (request) async {
@@ -140,11 +146,11 @@ void main(List<String> arguments) async {
                     continue;
                   }
                 }
-                //Update Fetch Histories
-                await DataBaseHelper().setFetchHistoryFor(
-                  tokenID: device, 
-                  newTimeStamp: message.timestamp
-                );
+                // //Update Fetch Histories
+                // await DataBaseHelper().setFetchHistoryFor(
+                //   tokenID: device, 
+                //   newTimeStamp: message.timestamp
+                // );
               }
               var targetUserID = message.receiverID;
               var targetDevices = await DataBaseHelper().fetchTokenIDsViaUserID(userID: targetUserID);
@@ -170,11 +176,11 @@ void main(List<String> arguments) async {
                     continue;
                   }
                 }
-                //Update Fetch Histories
-                await DataBaseHelper().setFetchHistoryFor(
-                  tokenID: device, 
-                  newTimeStamp: message.timestamp
-                );
+                // //Update Fetch Histories
+                // await DataBaseHelper().setFetchHistoryFor(
+                //   tokenID: device, 
+                //   newTimeStamp: message.timestamp
+                // );
               }
               var response = await onSendMessage(request, socket);
               controller.outStream.add(response);
