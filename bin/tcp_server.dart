@@ -1,7 +1,7 @@
 /*
  * @Author       : Linloir
  * @Date         : 2022-10-06 15:44:16
- * @LastEditTime : 2022-10-22 21:25:00
+ * @LastEditTime : 2022-10-23 10:33:58
  * @Description  : 
  */
 
@@ -56,6 +56,9 @@ void main(List<String> arguments) async {
           print('[L] Incoming from ${controller.socket.remoteAddress}:${controller.socket.remotePort}');
           if(request.requestType == RequestType.sendMessage) {
             print('[L] Message: (Message body)');
+          }
+          else if(request.requestType == RequestType.modifyProfile) {
+            print('[L] Profile: (Profile body)');
           }
           else {
             print('[L] Message: ${request.toJSON}');
